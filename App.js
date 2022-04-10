@@ -1,5 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
 import { store } from "./store";
 import { Provider } from "react-redux";
 import { ToastProvider } from "react-native-toast-notifications";
@@ -7,7 +7,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { KeyboardAvoidingView } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from './screens/LoginScreen';
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import HomeScreen from "./screens/HomeScreen";
+import ProductScreen from "./screens/ProductScreen";
+import CartScreen from "./screens/CartScreen";
+import CheckoutScreen from "./screens/CheckoutScreen";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -37,13 +42,41 @@ export default function App() {
                     headerShown: false,
                   }}
                 />
-                {/* <Stack.Screen
+                <Stack.Screen
                   name="RegisterScreen"
                   component={RegisterScreen}
                   options={{
                     headerShown: false,
                   }}
-                /> */}
+                />
+                <Stack.Screen
+                  name="HomeScreen"
+                  component={HomeScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="ProductScreen"
+                  component={ProductScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="CartScreen"
+                  component={CartScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="CheckoutScreen"
+                  component={CheckoutScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
               </Stack.Navigator>
             </ToastProvider>
           </KeyboardAvoidingView>
