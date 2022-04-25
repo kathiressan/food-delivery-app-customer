@@ -15,7 +15,19 @@ import { useNavigation } from "@react-navigation/native";
 
 const ProductScreen = ({
   route: {
-    params: { id, image, productName, price, sold, rating, description },
+    params: {
+      item: {
+        id,
+        imageUrl,
+        name,
+        price,
+        sold,
+        rating,
+        description,
+        sellerID,
+        stock,
+      },
+    },
   },
 }) => {
   const [itemCount, setItemCount] = useState(0);
@@ -24,10 +36,14 @@ const ProductScreen = ({
   const navigation = useNavigation();
 
   const addToCart = () => {
+    if (cart.length > 0 && cart[0].sellerID != sellerID) {
+      dispatch(setCart([]));
+    }
     const cartObj = {
-      id: id,
-      productName: productName,
-      image: image,
+      productID: id,
+      sellerID: sellerID,
+      productName: name,
+      image: imageUrl,
       unit: itemCount,
       price: price,
     };
@@ -57,7 +73,7 @@ const ProductScreen = ({
             },
           ]}
           source={{
-            uri: image,
+            uri: imageUrl,
           }}
         />
         <View style={tw`flex flex-row items-center`}>
@@ -74,13 +90,19 @@ const ProductScreen = ({
           <Text style={tw`text-xl ml-20`}>{sold}</Text>
         </View>
         <View style={tw`flex flex-row items-center`}>
-          <Text style={tw`text-2xl text-left text-white`}>{productName}</Text>
+          <Text style={tw`text-2xl text-left text-white`}>{name}</Text>
           <Text style={tw`ml-20`}></Text>
         </View>
         <View style={tw`flex flex-row items-center`}>
           <Text
             style={tw`text-2xl text-left text-white`}
           >{`RM: ${price}`}</Text>
+          <Text style={tw`ml-20`}></Text>
+        </View>
+        <View style={tw`flex flex-row items-center`}>
+          <Text
+            style={tw`text-2xl text-left text-white`}
+          >{`Stock: ${stock}`}</Text>
           <Text style={tw`ml-20`}></Text>
         </View>
       </View>
@@ -114,7 +136,10 @@ const ProductScreen = ({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={tw`font-bold text-xl`} onPress={addToCart}>
+          <Text
+            style={tw`font-bold text-xl`}
+            onPress={() => itemCount > 0 && itemCount <= stock && addToCart()}
+          >
             Add to cart
           </Text>
         </TouchableOpacity>

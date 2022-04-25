@@ -25,7 +25,7 @@ const CartScreen = () => {
       <Header />
       <ScrollView style={tw`p-5`}>
         {cart.map((item, index) => (
-          <View style={tw`p-5`} key={item.id}>
+          <View style={tw`p-5`} key={item.productID}>
             <View style={tw`flex flex-row`}>
               <Text style={tw`mr-3 text-xl`}>{index + 1}</Text>
               <Text style={tw`text-xl`}>{item.productName}</Text>
@@ -58,9 +58,9 @@ const CartScreen = () => {
             </View>
           </View>
         ))}
-        <Text
-          style={tw`text-right text-white text-lg`}
-        >{`Total Amount: ${totalAmount}`}</Text>
+        <Text style={tw`text-right text-white text-lg`}>{`Total Amount: ${
+          Math.round(totalAmount * 100) / 100
+        }`}</Text>
         <TouchableOpacity>
           <Text
             style={tw`text-xl mx-auto text-center rounded-xl border overflow-hidden mt-10 mb-10 bg-orange-400 w-[40%]`}

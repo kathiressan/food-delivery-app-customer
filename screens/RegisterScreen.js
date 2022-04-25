@@ -10,14 +10,7 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { useToast } from "react-native-toast-notifications";
 import { db } from "../firebase";
-import { getDatabase, ref, onValue, set } from "firebase/database";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore/lite";
+import { collection, addDoc, doc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 
 const RegisterScreen = () => {
@@ -28,14 +21,25 @@ const RegisterScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const toast = useToast();
-  // const accountsCol = collection(db, "accounts");
+  const accountsRef = collection(db, "accounts");
   const navigation = useNavigation();
 
-  const registerFunc = () => {
-    toast.show("Registration Successful!", {
-      type: "success",
-    });
-    navigation.navigate("LoginScreen");
+  const registerFunc = async () => {
+    try {
+      await addDoc(accountsRef, {
+        name: name,
+        phoneNumber: phoneNumber,
+        email: email,
+        password: password,
+        accountType: "Customer",
+      });
+      toast.show("Registration Successful!", {
+        type: "success",
+      });
+      navigation.navigate("LoginScreen");
+    } catch (err) {
+      alert(err);
+    }
   };
 
   return (

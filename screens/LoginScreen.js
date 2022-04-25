@@ -10,52 +10,42 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { useToast } from "react-native-toast-notifications";
 import { db } from "../firebase";
-import { getDatabase, ref, onValue, set } from "firebase/database";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore/lite";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { setAccount } from "../slices/accountSlice";
 
 const LoginScreen = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const toast = useToast();
-  // const accountsCol = collection(db, "accounts");
+  const accountsRef = collection(db, "accounts");
   const navigation = useNavigation();
 
-  //   const q = query(collection(db, "cities"), where("capital", "==", true));
-
-  // const querySnapshot = await getDocs(q);
-  // querySnapshot.forEach((doc) => {
-  //   // doc.data() is never undefined for query doc snapshots
-  //   console.log(doc.id, " => ", doc.data());
-  // });
-
-  const loginFunc = () => {
-    // const q = query(accountsCol, where("email", "==", email));
-    // console.log("THIS RUNS 1");
-    // const querySnapshot = getDocs(q).then((res) =>
-    //   res.map((doc) => {
-    //     console.log(doc.data());
-    //   })
-    // );
-    // const accs = querySnapshot.map((doc) => {
-    //   doc.data();
-    // });
-    // console.log("accs", accs);
-    // if (accs.length > 0) {
-    //   const firstAcc = accs[0];
-    //   console.log("firstAcc", firstAcc);
-    // }
-    toast.show("Login Successful!", {
-      type: "success",
+  const loginFunc = async () => {
+    const q = query(accountsRef, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    let validAcc = false;
+    querySnapshot.forEach((doc) => {
+      if (doc.data().email == email && doc.data().password == password) {
+        validAcc = true;
+        const acc = doc.data();
+        acc.id = doc.id;
+        dispatch(setAccount(acc));
+      }
     });
-    navigation.navigate("HomeScreen");
+    if (validAcc) {
+      toast.show("Login Successful!", {
+        type: "success",
+      });
+      navigation.navigate("HomeScreen");
+    } else {
+      toast.show("Invalid email or password!", {
+        type: "danger",
+      });
+    }
   };
 
   return (

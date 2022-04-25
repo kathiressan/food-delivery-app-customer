@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
@@ -13,18 +14,30 @@ import tw from "twrnc";
 import Header from "../components/Header";
 import * as Location from "expo-location";
 import { useDispatch, useSelector } from "react-redux";
-import { selectCart, setCart, selectTotalAmount } from "../slices/cartSlice";
+import {
+  selectCart,
+  setCart,
+  selectTotalAmount,
+  incrementTotalAmount,
+} from "../slices/cartSlice";
 import { useNavigation } from "@react-navigation/native";
+import { collection, addDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import { useToast } from "react-native-toast-notifications";
+import { db } from "../firebase";
+import { selectAccount } from "../slices/accountSlice";
 
 const CheckoutScreen = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [address, setAddress] = useState(null);
   //   const [coordinates, setCoordinates] = useState({});
 
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const totalAmount = useSelector(selectTotalAmount);
+  const account = useSelector(selectAccount);
   const navigation = useNavigation();
+  const toast = useToast();
 
   useEffect(() => {
     (async () => {
@@ -45,6 +58,53 @@ const CheckoutScreen = () => {
     text = JSON.stringify(location);
   }
 
+  const createOrder = async () => {
+    try {
+      if (address) {
+        const sellerID = cart[0].sellerID;
+        const fetchedSeller = await getDoc(doc(db, "accounts", sellerID));
+        const pickupAddress = fetchedSeller.data().shopAddress;
+
+        for (const item of cart) {
+          const productID = item.productID;
+          const fetchedProduct = await getDoc(doc(db, "products", productID));
+          const updatedStock = fetchedProduct.data().stock - item.unit;
+          if (updatedStock < 0) return alert("Not enough stock remaining");
+          await updateDoc(doc(db, "products", productID), {
+            stock: updatedStock,
+          });
+        }
+
+        const orderObj = {
+          deliveryAddress: address,
+          pickupAddress: pickupAddress,
+          orderStatus: "PENDING_PICKUP",
+          userID: account.id,
+          subTotal: Math.round(totalAmount * 100) / 100,
+          deliveryFee: 5,
+          totalAmount: Math.round((totalAmount + 5) * 100) / 100,
+          items: cart,
+        };
+        await addDoc(collection(db, "orders"), orderObj);
+        dispatch(setCart([]));
+        dispatch(incrementTotalAmount(0.0));
+        toast.show(
+          "Order created successfully! Our rider will pick it up shortly.",
+          {
+            type: "success",
+          }
+        );
+        navigation.navigate("HomeScreen");
+      } else {
+        toast.show("Please enter the delivery address", {
+          type: "danger",
+        });
+      }
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   return (
     <SafeAreaView style={tw`bg-orange-300 h-full flex`}>
       <Header />
@@ -52,7 +112,7 @@ const CheckoutScreen = () => {
         {text != "Waiting.." ? (
           //   <Text>{text}</Text>
           <MapView
-            style={[tw`h-70`, styles.map]}
+            style={[tw`h-60`, styles.map]}
             initialRegion={{
               latitude: JSON.parse(text).coords.latitude,
               longitude: JSON.parse(text).coords.longitude,
@@ -83,6 +143,12 @@ const CheckoutScreen = () => {
         ) : (
           <Text>Map Loading...</Text>
         )}
+        <TextInput
+          style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
+          onChangeText={setAddress}
+          placeholder="Delivery address"
+          value={address}
+        />
         <View style={tw`mt-10 bg-orange-400 p-5 rounded-xl border`}>
           <Text style={tw`mb-4`}>Payment Method:</Text>
           <Text>Cash On Delivery (COD)</Text>
@@ -91,7 +157,10 @@ const CheckoutScreen = () => {
           <Text style={tw`mb-4`}>Order Summary:</Text>
           <ScrollView>
             {cart.map((item) => (
-              <View style={tw`flex flex-row justify-between`} key={item.id}>
+              <View
+                style={tw`flex flex-row justify-between`}
+                key={item.productID}
+              >
                 <View style={tw`flex flex-row`}>
                   <Text>{`${item.unit}x `}</Text>
                   <Text>{item.productName}</Text>
@@ -99,17 +168,23 @@ const CheckoutScreen = () => {
                 <Text>{`RM ${item.price * item.unit}`}</Text>
               </View>
             ))}
+
             <View style={tw`flex flex-row justify-between mt-4`}>
+              <Text>Delivery Fee</Text>
+              <Text>{`RM 5`}</Text>
+            </View>
+
+            <View style={tw`flex flex-row justify-between`}>
               <Text>Subtotal</Text>
-              <Text>{`RM ${totalAmount}`}</Text>
+              <Text>{`RM ${Math.round((totalAmount + 5) * 100) / 100}`}</Text>
             </View>
           </ScrollView>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={createOrder}>
           <Text
             style={tw`mt-3 p-2 bg-orange-400 border overflow-hidden rounded-lg`}
           >
-            Make Payment
+            Place Order
           </Text>
         </TouchableOpacity>
       </View>

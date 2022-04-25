@@ -6,19 +6,21 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
+  ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import tw from "twrnc";
 import { useToast } from "react-native-toast-notifications";
 import { db } from "../firebase";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 import {
-  getFirestore,
-  collection,
+  doc,
   getDocs,
   query,
+  orderBy,
+  collection,
   where,
-} from "firebase/firestore/lite";
+} from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
 import Header from "../components/Header";
@@ -27,6 +29,7 @@ import PopularProductComponent from "../components/PopularProductComponent";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
   const DATA = [
     {
       id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -66,41 +69,28 @@ const HomeScreen = () => {
     },
   ];
 
-  const DATA2 = [
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-      image:
-        "https://cdn-prod.medicalnewstoday.com/content/images/articles/283/283659/a-basket-of-eggs.jpg",
-      productName: "Telur Kampung",
-      price: 6,
-      rating: 4.5,
-      sold: 35,
-      description: "Fresh eggs",
-    },
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28bb",
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/c/c8/Oat_milk_glass_and_bottles.jpg",
-      productName: "Milk",
-      price: 12,
-      rating: 4.5,
-      sold: 35,
-      description: "Fresh milk",
-    },
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28bc",
-      image:
-        "https://cdn-prod.medicalnewstoday.com/content/images/articles/283/283659/a-basket-of-eggs.jpg",
-      productName: "Eggs",
-      price: 6,
-      rating: 4.5,
-      sold: 35,
-      description: "Fresh eggs",
-    },
-  ];
-  DATA2.forEach((item) => (item.navigation = navigation));
+  useEffect(() => {
+    const getProducts = async () => {
+      const q = query(
+        collection(db, "products"),
+        where("stock", ">=", 0),
+        where("publish", "==", true),
+        orderBy("stock", "desc"),
+        orderBy("rating", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        const docObj = doc.data();
+        docObj.id = doc.id;
+        setProducts((oldArr) => [...oldArr, docObj]);
+      });
+    };
+    getProducts();
+  }, []);
 
-  //   const navigation = useNavigation();
+  const selectProduct = (item) => {
+    navigation.navigate("ProductScreen", { item: item });
+  };
 
   return (
     <SafeAreaView style={tw`flex bg-orange-300 h-full`}>
@@ -119,13 +109,41 @@ const HomeScreen = () => {
 
       <View style={tw`mt-5 p-3 pl-5`}>
         <Text style={tw`text-black mb-3`}>Popular Products</Text>
-        <View style={tw`items-center`}>
-          <FlatList
-            data={DATA2}
-            renderItem={PopularProductComponent}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
+        <ScrollView>
+          <View style={tw`flex flex-row flex-wrap items-start mb-90 w-[100%]`}>
+            {products.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={tw`mb-2 flex items-center w-[50%]`}
+                onPress={() => {
+                  selectProduct(item);
+                }}
+              >
+                <View style={tw`border`}>
+                  <Image
+                    style={[
+                      {
+                        width: 120,
+                        height: 150,
+                        resizeMode: "contain",
+                      },
+                    ]}
+                    resizeMode={"cover"}
+                    source={{
+                      uri: item.imageUrl,
+                    }}
+                  />
+                </View>
+                <Text style={tw`items-center`}>{item.productName}</Text>
+                <View style={tw`flex flex-row`}>
+                  <Text style={tw`text-red-500`}>RM: </Text>
+                  <Text>{item.price}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {/* <Text style={tw`mb-100`}>eqr</Text> */}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
