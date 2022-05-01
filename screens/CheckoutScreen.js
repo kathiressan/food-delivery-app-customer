@@ -69,6 +69,7 @@ const CheckoutScreen = () => {
           const productID = item.productID;
           const fetchedProduct = await getDoc(doc(db, "products", productID));
           const updatedStock = fetchedProduct.data().stock - item.unit;
+          const updatedSold = fetchedProduct.data().sold + item.unit;
           if (updatedStock < 0) return alert("Not enough stock remaining");
           await updateDoc(doc(db, "products", productID), {
             stock: updatedStock,
@@ -84,6 +85,8 @@ const CheckoutScreen = () => {
           deliveryFee: 5,
           totalAmount: Math.round((totalAmount + 5) * 100) / 100,
           items: cart,
+          sellerID: cart[0].sellerID,
+          rated: false,
         };
         await addDoc(collection(db, "orders"), orderObj);
         dispatch(setCart([]));

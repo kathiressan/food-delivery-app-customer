@@ -65,7 +65,7 @@ const CartScreen = () => {
           <Text
             style={tw`text-xl mx-auto text-center rounded-xl border overflow-hidden mt-10 mb-10 bg-orange-400 w-[40%]`}
             onPress={() => {
-              navigation.navigate("CheckoutScreen");
+              cart.length > 0 && navigation.navigate("CheckoutScreen");
             }}
           >
             Check Out

@@ -142,7 +142,6 @@ const HomeScreen = () => {
               </TouchableOpacity>
             ))}
           </View>
-          {/* <Text style={tw`mb-100`}>eqr</Text> */}
         </ScrollView>
       </View>
     </SafeAreaView>

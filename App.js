@@ -13,6 +13,9 @@ import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/CartScreen";
 import CheckoutScreen from "./screens/CheckoutScreen";
+import MenuScreen from "./screens/MenuScreen";
+import OrderHistoryListScreen from "./screens/OrderHistoryListScreen";
+import RatingScreen from "./screens/RatingScreen";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -73,6 +76,27 @@ export default function App() {
                 <Stack.Screen
                   name="CheckoutScreen"
                   component={CheckoutScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="MenuScreen"
+                  component={MenuScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="OrderHistoryListScreen"
+                  component={OrderHistoryListScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="RatingScreen"
+                  component={RatingScreen}
                   options={{
                     headerShown: false,
                   }}

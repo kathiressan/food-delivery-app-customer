@@ -6,8 +6,8 @@ import { useNavigation } from "@react-navigation/native";
 
 const Header = () => {
   const navigation = useNavigation();
-  const logoutFunc = () => {
-    navigation.navigate("LoginScreen");
+  const menuScreenFunc = () => {
+    navigation.navigate("MenuScreen");
   };
   const homeScreenNav = () => {
     navigation.navigate("HomeScreen");
@@ -44,7 +44,7 @@ const Header = () => {
         />
       </TouchableOpacity>
       <Avatar
-        onPress={logoutFunc}
+        onPress={menuScreenFunc}
         size={55}
         rounded
         source={{
