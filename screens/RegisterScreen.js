@@ -61,24 +61,28 @@ const RegisterScreen = () => {
         style={tw`bg-white w-[65%] p-2 border rounded-xl mt-4`}
         onChangeText={setName}
         placeholder="Name"
+        placeholderTextColor="black"
         value={name}
       />
       <TextInput
         style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
         onChangeText={setPhoneNumber}
         placeholder="Phone Number"
+        placeholderTextColor="black"
         value={phoneNumber}
       />
       <TextInput
         style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
         onChangeText={setEmail}
         placeholder="Email"
+        placeholderTextColor="black"
         value={email}
       />
       <TextInput
         style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
         onChangeText={setPassword}
         placeholder="Password"
+        placeholderTextColor="black"
         secureTextEntry={true}
         value={password}
       />
@@ -86,6 +90,7 @@ const RegisterScreen = () => {
         style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
         onChangeText={setConfirmPassword}
         placeholder="Confirm Password"
+        placeholderTextColor="black"
         secureTextEntry={true}
         value={confirmPassword}
       />

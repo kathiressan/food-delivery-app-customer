@@ -150,6 +150,7 @@ const CheckoutScreen = () => {
           style={tw`bg-white w-[65%] p-2 border rounded-xl mt-2`}
           onChangeText={setAddress}
           placeholder="Delivery address"
+          placeholderTextColor="black"
           value={address}
         />
         <View style={tw`mt-10 bg-orange-400 p-5 rounded-xl border`}>

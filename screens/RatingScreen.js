@@ -104,6 +104,7 @@ const RatingScreen = ({
                 ]);
               }}
               placeholder="Rate 1-5"
+              placeholderTextColor="black"
               value={inputs[index]}
             />
           </View>
