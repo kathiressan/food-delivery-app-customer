@@ -87,11 +87,11 @@ const ProductScreen = ({
             icon="ios-star"
             direction="row" // anyOf["row" (default), "row-reverse", "column", "column-reverse"]
           />
-          <Text style={tw`text-xl ml-20`}>{sold}</Text>
+          <Text style={tw`text-xl ml-20`}>{`Sold: ${sold}`}</Text>
         </View>
         <View style={tw`flex flex-row items-center`}>
-          <Text style={tw`text-2xl text-left text-white`}>{name}</Text>
-          <Text style={tw`ml-20`}></Text>
+          <Text style={tw`text-2xl text-white`}>{name}</Text>
+          {/* <Text style={tw`ml-20`}></Text> */}
         </View>
         <View style={tw`flex flex-row items-center`}>
           <Text

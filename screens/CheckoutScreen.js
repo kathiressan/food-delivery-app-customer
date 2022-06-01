@@ -30,7 +30,8 @@ const CheckoutScreen = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [address, setAddress] = useState(null);
-  //   const [coordinates, setCoordinates] = useState({});
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
@@ -87,6 +88,8 @@ const CheckoutScreen = () => {
           items: cart,
           sellerID: cart[0].sellerID,
           rated: false,
+          deliveryLatitude: latitude,
+          deliveryLongitude: longitude
         };
         await addDoc(collection(db, "orders"), orderObj);
         dispatch(setCart([]));
@@ -107,6 +110,13 @@ const CheckoutScreen = () => {
       alert(err);
     }
   };
+
+  useEffect(() => {
+    if (text != "Waiting..") {
+      setLatitude(JSON.parse(text).coords.latitude);
+      setLongitude(JSON.parse(text).coords.longitude);
+    }
+  }, [text])
 
   return (
     <SafeAreaView style={tw`bg-orange-300 h-full flex`}>
@@ -135,12 +145,11 @@ const CheckoutScreen = () => {
                 latitude: JSON.parse(text).coords.latitude,
                 longitude: JSON.parse(text).coords.longitude,
               }}
-              //   onDragEnd={(e) =>
-              //     setCoordinates({
-              //       latitude: e.nativeEvent.coordinate.latitude,
-              //       longitude: e.nativeEvent.coordinate.longitude,
-              //     })
-              //   }
+                onDragEnd={(e) => {
+                    setLatitude(e.nativeEvent.coordinate.latitude);
+                    setLongitude(e.nativeEvent.coordinate.longitude);
+                  }
+                }
             />
           </MapView>
         ) : (
