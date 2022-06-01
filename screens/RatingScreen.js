@@ -39,7 +39,7 @@ const RatingScreen = ({
   const submitRatings = async () => {
     let correctInputs = true;
     for (const inputx of inputs) {
-      if (isNaN(inputx)) correctInputs = false;
+      if (isNaN(inputx) || inputx == null) correctInputs = false;
     }
     if (!correctInputs) {
       toast.show(
@@ -93,7 +93,7 @@ const RatingScreen = ({
             key={item.productID}
             style={tw`flex flex-row items-center justify-center`}
           >
-            <Text style={tw`mr-3`}>{`${index + 1}. ${item.productName}`}</Text>
+            <Text style={tw`mr-3 flex flex-1`}>{`${index + 1}. ${item.productName}`}</Text>
             <TextInput
               style={tw`bg-white w-[25%] p-1 border mt-2 text-center`}
               onChangeText={(text) => {

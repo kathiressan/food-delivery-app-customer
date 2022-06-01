@@ -64,7 +64,7 @@ const OrderHistoryListScreen = () => {
               key={order.id}
               style={tw`border mb-2 p-2 rounded-lg`}
               onPress={() => {
-                order.rated === true ? ratingPageFunc(order) : null;
+                order.orderStatus === "Delivered" && order.rated == false ? ratingPageFunc(order) : null;
               }}
             >
               {order.rated == false && (
