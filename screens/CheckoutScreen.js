@@ -21,7 +21,14 @@ import {
   incrementTotalAmount,
 } from "../slices/cartSlice";
 import { useNavigation } from "@react-navigation/native";
-import { collection, addDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  increment,
+} from "firebase/firestore";
 import { useToast } from "react-native-toast-notifications";
 import { db } from "../firebase";
 import { selectAccount } from "../slices/accountSlice";
@@ -74,6 +81,7 @@ const CheckoutScreen = () => {
           if (updatedStock < 0) return alert("Not enough stock remaining");
           await updateDoc(doc(db, "products", productID), {
             stock: updatedStock,
+            sold: increment(item.unit),
           });
         }
 
@@ -89,7 +97,7 @@ const CheckoutScreen = () => {
           sellerID: cart[0].sellerID,
           rated: false,
           deliveryLatitude: latitude,
-          deliveryLongitude: longitude
+          deliveryLongitude: longitude,
         };
         await addDoc(collection(db, "orders"), orderObj);
         dispatch(setCart([]));
@@ -116,7 +124,7 @@ const CheckoutScreen = () => {
       setLatitude(JSON.parse(text).coords.latitude);
       setLongitude(JSON.parse(text).coords.longitude);
     }
-  }, [text])
+  }, [text]);
 
   return (
     <SafeAreaView style={tw`bg-orange-300 h-full flex`}>
@@ -145,11 +153,10 @@ const CheckoutScreen = () => {
                 latitude: JSON.parse(text).coords.latitude,
                 longitude: JSON.parse(text).coords.longitude,
               }}
-                onDragEnd={(e) => {
-                    setLatitude(e.nativeEvent.coordinate.latitude);
-                    setLongitude(e.nativeEvent.coordinate.longitude);
-                  }
-                }
+              onDragEnd={(e) => {
+                setLatitude(e.nativeEvent.coordinate.latitude);
+                setLongitude(e.nativeEvent.coordinate.longitude);
+              }}
             />
           </MapView>
         ) : (

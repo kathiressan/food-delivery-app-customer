@@ -5,13 +5,22 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import tw from "twrnc";
 import Header from "../components/Header";
 import { Rating } from "react-native-rating-element";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCart, setCart, incrementTotalAmount } from "../slices/cartSlice";
 import { useNavigation } from "@react-navigation/native";
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  increment,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 const ProductScreen = ({
   route: {
@@ -34,6 +43,15 @@ const ProductScreen = ({
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const updateProd = async () => {
+      await updateDoc(doc(db, "products", id), {
+        views: increment(1),
+      });
+    };
+    updateProd();
+  }, []);
 
   const addToCart = () => {
     if (cart.length > 0 && cart[0].sellerID != sellerID) {
