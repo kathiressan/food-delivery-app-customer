@@ -25,7 +25,7 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const loginFunc = async () => {
-    const q = query(accountsRef, where("email", "==", email));
+    const q = query(accountsRef, where("email", "==", email), where("accountType", "==", "Customer"));
     const querySnapshot = await getDocs(q);
     let validAcc = false;
     querySnapshot.forEach((doc) => {
