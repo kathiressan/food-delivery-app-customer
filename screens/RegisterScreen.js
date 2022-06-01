@@ -14,11 +14,11 @@ import { collection, addDoc, doc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 
 const RegisterScreen = () => {
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState(null);
 
   const toast = useToast();
   const accountsRef = collection(db, "accounts");
@@ -26,17 +26,23 @@ const RegisterScreen = () => {
 
   const registerFunc = async () => {
     try {
-      await addDoc(accountsRef, {
-        name: name,
-        phoneNumber: phoneNumber,
-        email: email,
-        password: password,
-        accountType: "Customer",
-      });
-      toast.show("Registration Successful!", {
-        type: "success",
-      });
-      navigation.navigate("LoginScreen");
+      if (name == null || phoneNumber == null || email == null || password == null || confirmPassword == null) {
+        toast.show("Please fill up all fields", {
+          type: "danger",
+        });
+      } else {
+        await addDoc(accountsRef, {
+          name: name,
+          phoneNumber: phoneNumber,
+          email: email,
+          password: password,
+          accountType: "Customer",
+        });
+        toast.show("Registration Successful!", {
+          type: "success",
+        });
+        navigation.navigate("LoginScreen");
+      }
     } catch (err) {
       alert(err);
     }
